@@ -4,76 +4,179 @@
 <head>
   <meta charset="UTF-8">
   <title>Registro de Asistencia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap & Select2 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Estilos personalizados -->
+  <style>
+    body {
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                  url("{% static 'img/fondo-oficina.jpg' %}") no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #000000;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.95);
+      color: #333;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 1s ease;
+    }
+
+    .form-label {
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .select2-container--default .select2-selection--single {
+      height: 38px;
+      padding: 6px 12px;
+    }
+  </style>
+
 </head>
 
-<body class="bg-light">
-<div class="container mt-5">
-  <div class="card shadow rounded-4">
-    <div class="card-header bg-primary text-white">
-      <h4 class="mb-0">Registro de Asistencia</h4>
-    </div>
-    <div class="card-body">
-      <form method="POST">
-        {% csrf_token %}
+<body>
+  <div class="container px-3">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+        <div class="card p-4">
+          <div class="card-header bg-primary text-white text-center rounded-3">
+            <h4 class="mb-0">Registro de Asistencia</h4>
+          </div>
+          <div class="card-body mt-3">
+            <form method="POST">
+              {% csrf_token %}
 
-        <!-- campo empleado -->
-        <div class="mb-3">
-          <label class="form-label">Empleado:</label>
-          <select class="form-select select2" name="empleado" required>
-            <option value="">-- Selecciona un empleado --</option>
-            {% for emp in empleados %}
-              <option value="{{ emp.id_empleado }}">{{ emp.nombres }} {{ emp.apellidos }}</option>
-            {% endfor %}
-          </select>
+              <!-- Empleado -->
+              <div class="mb-3">
+                <label class="form-label">Empleado:</label>
+                <select class="form-select select2" name="empleado" required>
+                  <option value="">-- Selecciona un empleado --</option>
+                  {% for emp in empleados %}
+                    <option value="{{ emp.id_empleado }}">{{ emp.nombres }} {{ emp.apellidos }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Tipo de asistencia -->
+              <div class="mb-3">
+                <label class="form-label">Tipo de Asistencia:</label>
+                <select name="tipo_evento" id="tipo_evento" class="form-select" required>
+                  <option value="">-- Selecciona un tipo --</option>
+                  {% for tipo in tipos_evento %}
+                    <option value="{{ tipo.id_tipo }}">{{ tipo.nombre_asistencia }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Descripción -->
+              <div class="mb-3" id="descripcion_group" style="display: none;">
+                <label class="form-label">Descripción adicional:</label>
+                <input type="text" name="descripcion" class="form-control" maxlength="50" placeholder="Ej: Visita al cliente, Cita médica...">
+              </div>
+
+              <!-- Ubicación actual -->
+              <div class="mb-3">
+                <label class="form-label">Ubicación actual:</label>
+                <p id="info_ubicacion" class="form-control" style="height: auto;">📍 Esperando ubicación...</p>
+              </div>
+
+              <!-- Botón -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg">Registrar Asistencia</button>
+              </div>
+            </form>
+          </div>
         </div>
-
-        <!-- campo asistencia -->
-        <div class="mb-3">
-          <label class="form-label">Tipo de Asistencia:</label>
-          <select name="tipo_evento" id="tipo_evento" class="form-select" required>
-            <option value="">-- Selecciona un tipo --</option>
-            {% for tipo in tipos_evento %}
-              <option value="{{ tipo.id_tipo }}">{{ tipo.nombre_asistencia }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <!-- Campo de descripción -->
-        <div class="mb-3" id="descripcion_group" style="display: none;">
-          <label class="form-label">Descripción adicional:</label>
-          <input type="text" name="descripcion" class="form-control" maxlength="50" placeholder="Ej: Visita al cliente, Cita médica...">
-        </div>
-
-        <!-- Campo de envio -->
-        <div class="d-grid">
-          <button type="submit" class="btn btn-success">Registrar Asistencia</button>
-        </div>
-
-      </form>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<script>
-  $(document).ready(function () {
-    $('.select2').select2({
-      placeholder: "Busca un empleado",
-      allowClear: true
+  <!-- Select2 y Mostrar descripción -->
+  <script>
+    $(document).ready(function () {
+      $('.select2').select2({
+        placeholder: "Busca un empleado",
+        allowClear: true,
+        width: '100%'
+      });
     });
-  });
 
-  //visualizacion del campo descripcion
-  document.getElementById('tipo_evento').addEventListener('change', function () {
-    const tipoId = parseInt(this.value);
-    document.getElementById('descripcion_group').style.display = tipoId > 4 ? 'block' : 'none';
-  });
-</script>
+    document.getElementById('tipo_evento').addEventListener('change', function () {
+      const tipoId = parseInt(this.value);
+      document.getElementById('descripcion_group').style.display = tipoId > 4 ? 'block' : 'none';
+    });
+  </script>
 
+  <!-- Geolocalización y cálculo de distancia -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const EMPRESA_LAT = -12.080257055918374;
+      const EMPRESA_LON = -76.99778307088776;
+      const RADIO_METROS = 500;
+
+      function calcularDistancia(lat1, lon1, lat2, lon2) {
+        const R = 6371000;
+        const rad = Math.PI / 180;
+        const dLat = (lat2 - lat1) * rad;
+        const dLon = (lon2 - lon1) * rad;
+        const a = Math.sin(dLat / 2) ** 2 +
+                  Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
+                  Math.sin(dLon / 2) ** 2;
+        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+      }
+
+      const form = document.querySelector("form");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        if (!navigator.geolocation) {
+          alert("Tu navegador no soporta geolocalización.");
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const distancia = calcularDistancia(lat, lon, EMPRESA_LAT, EMPRESA_LON);
+
+            document.getElementById("info_ubicacion").innerText =
+              `📍 Latitud: ${lat.toFixed(6)}\n📍 Longitud: ${lon.toFixed(6)}\n📏 Distancia a empresa: ${Math.round(distancia)} metros`;
+
+            if (distancia <= RADIO_METROS) {
+              alert("✅ Estás dentro del área de la empresa. Distancia: " + Math.round(distancia) + " metros.");
+              form.submit();
+            } else {
+              alert("🚫 Debes estar dentro de la empresa para registrar asistencia.\nDistancia: " + Math.round(distancia) + " metros.");
+            }
+          },
+          function (error) {
+            alert("⚠️ No se pudo obtener tu ubicación. Asegúrate de activar el GPS o dar permisos al navegador.");
+          }
+        );
+      });
+    });
+  </script>
 </body>
 </html>
