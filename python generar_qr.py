@@ -1,6 +1,6 @@
 import qrcode
 
-url = "https://wedex59.pythonanywhere.com/"
+url = "https://jeboho3393.pythonanywhere.com/"
 img = qrcode.make(url)
 img.save("qr_asistencia.png")
 
