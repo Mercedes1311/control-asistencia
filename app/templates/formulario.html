@@ -6,49 +6,10 @@
   <title>Registro de Asistencia</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Bootstrap & Select2 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-  <!-- Estilos personalizados -->
-  <style>
-    body {
-      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                  url("{% static 'img/fondo-oficina.jpg' %}") no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #000000;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card {
-      background-color: rgba(255, 255, 255, 0.95);
-      color: #333;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-      animation: fadeIn 1s ease;
-    }
-
-    .form-label {
-      font-weight: bold;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .select2-container--default .select2-selection--single {
-      height: 38px;
-      padding: 6px 12px;
-    }
-  </style>
-
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-
 <body>
   <div class="container px-3">
     <div class="row justify-content-center">
@@ -61,7 +22,6 @@
             <form method="POST">
               {% csrf_token %}
 
-              <!-- Empleado -->
               <div class="mb-3">
                 <label class="form-label">Empleado:</label>
                 <select class="form-select select2" name="empleado" required>
@@ -72,7 +32,6 @@
                 </select>
               </div>
 
-              <!-- Tipo de asistencia -->
               <div class="mb-3">
                 <label class="form-label">Tipo de Asistencia:</label>
                 <select name="tipo_evento" id="tipo_evento" class="form-select" required>
@@ -83,19 +42,18 @@
                 </select>
               </div>
 
-              <!-- Descripción -->
               <div class="mb-3" id="descripcion_group" style="display: none;">
                 <label class="form-label">Descripción adicional:</label>
-                <input type="text" name="descripcion" class="form-control" maxlength="50" placeholder="Ej: Visita al cliente, Cita médica...">
+                <input type="text" name="descripcion" class="form-control" maxlength="50">
               </div>
 
-              <!-- Ubicación actual -->
+              <input type="hidden" name="fingerprint" id="fingerprint_input">
+
               <div class="mb-3">
                 <label class="form-label">Ubicación actual:</label>
-                <p id="info_ubicacion" class="form-control" style="height: auto;">📍 Esperando ubicación...</p>
+                <p id="info_ubicacion" class="form-control" style="height: auto;">Esperando ubicación...</p>
               </div>
 
-              <!-- Botón -->
               <div class="d-grid">
                 <button type="submit" class="btn btn-success btn-lg">Registrar Asistencia</button>
               </div>
@@ -106,77 +64,93 @@
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
 
-  <!-- Select2 y Mostrar descripción -->
-  <script>
-    $(document).ready(function () {
-      $('.select2').select2({
-        placeholder: "Busca un empleado",
-        allowClear: true,
-        width: '100%'
+
+
+<script>
+  const EMPRESA_LAT = -12.080257055918374;
+  const EMPRESA_LON = -76.99778307088776;
+  const RADIO_METROS = 3000;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    $('.select2').select2({ width: '100%' });
+
+    const form = document.querySelector("form");
+    const fingerprintInput = document.getElementById("fingerprint_input");
+    const tipoSelect = document.getElementById('tipo_evento');
+    const descripcionGroup = document.getElementById('descripcion_group');
+    let fingerprintListo = false;
+
+    // FingerprintJS
+    FingerprintJS.load().then(fp => {
+      fp.get().then(result => {
+        const visitorId = result.visitorId;
+        fingerprintInput.value = visitorId;
+        fingerprintListo = true;
+        console.log("Fingerprint generado:", visitorId);
       });
     });
 
-    document.getElementById('tipo_evento').addEventListener('change', function () {
-      const tipoId = parseInt(this.value);
-      document.getElementById('descripcion_group').style.display = tipoId > 4 ? 'block' : 'none';
+    // Mostrar/ocultar campo descripción según tipo de asistencia
+    tipoSelect.addEventListener('change', function () {
+      const textoSeleccionado = tipoSelect.options[tipoSelect.selectedIndex].text;
+      const mostrar = textoSeleccionado === 'Entrada por otros' || textoSeleccionado === 'Salida por otros';
+      descripcionGroup.style.display = mostrar ? 'block' : 'none';
     });
-  </script>
 
-  <!-- Geolocalización y cálculo de distancia -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const EMPRESA_LAT = -12.080257055918374;
-      const EMPRESA_LON = -76.99778307088776;
-      const RADIO_METROS = 500;
+    // Envío del formulario con validación de fingerprint y ubicación
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-      function calcularDistancia(lat1, lon1, lat2, lon2) {
-        const R = 6371000;
-        const rad = Math.PI / 180;
-        const dLat = (lat2 - lat1) * rad;
-        const dLon = (lon2 - lon1) * rad;
-        const a = Math.sin(dLat / 2) ** 2 +
-                  Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
-                  Math.sin(dLon / 2) ** 2;
-        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+      if (!fingerprintListo || !fingerprintInput.value) {
+        alert("Fingerprint aún no cargado. Espera un momento...");
+        return;
       }
 
-      const form = document.querySelector("form");
+      if (!navigator.geolocation) {
+        alert("Tu navegador no soporta geolocalización.");
+        return;
+      }
 
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const distancia = calcularDistancia(lat, lon, EMPRESA_LAT, EMPRESA_LON);
 
-        if (!navigator.geolocation) {
-          alert("Tu navegador no soporta geolocalización.");
-          return;
-        }
+          document.getElementById("info_ubicacion").innerText =
+            `Latitud: ${lat.toFixed(6)}\nLongitud: ${lon.toFixed(6)}\nDistancia: ${Math.round(distancia)} metros`;
 
-        navigator.geolocation.getCurrentPosition(
-          function (position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            const distancia = calcularDistancia(lat, lon, EMPRESA_LAT, EMPRESA_LON);
-
-            document.getElementById("info_ubicacion").innerText =
-              `📍 Latitud: ${lat.toFixed(6)}\n📍 Longitud: ${lon.toFixed(6)}\n📏 Distancia a empresa: ${Math.round(distancia)} metros`;
-
-            if (distancia <= RADIO_METROS) {
-              alert("✅ Estás dentro del área de la empresa. Distancia: " + Math.round(distancia) + " metros.");
-              form.submit();
-            } else {
-              alert("🚫 Debes estar dentro de la empresa para registrar asistencia.\nDistancia: " + Math.round(distancia) + " metros.");
-            }
-          },
-          function (error) {
-            alert("⚠️ No se pudo obtener tu ubicación. Asegúrate de activar el GPS o dar permisos al navegador.");
+          if (distancia > RADIO_METROS) {
+            alert("Debes estar dentro del área de la empresa para registrar asistencia.");
+            return;
           }
-        );
-      });
+
+          alert("Registrando asistencia...");
+          form.submit();
+        },
+        function () {
+          alert("No se pudo obtener tu ubicación.");
+        }
+      );
     });
-  </script>
+
+    // Función para calcular distancia en metros entre dos coordenadas
+    function calcularDistancia(lat1, lon1, lat2, lon2) {
+      const R = 6371000, rad = Math.PI / 180;
+      const dLat = (lat2 - lat1) * rad;
+      const dLon = (lon2 - lon1) * rad;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*rad)*Math.cos(lat2*rad)*Math.sin(dLon/2)**2;
+      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    }
+  });
+</script>
+
+
+
 </body>
 </html>
