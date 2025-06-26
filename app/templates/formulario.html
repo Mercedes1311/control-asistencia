@@ -49,10 +49,10 @@
 
               <input type="hidden" name="fingerprint" id="fingerprint_input">
 
-              <div class="mb-3">
+              <!-- <div class="mb-3">
                 <label class="form-label">Ubicación actual:</label>
                 <p id="info_ubicacion" class="form-control" style="height: auto;">Esperando ubicación...</p>
-              </div>
+              </div> -->
 
               <div class="d-grid">
                 <button type="submit" class="btn btn-success btn-lg">Registrar Asistencia</button>
@@ -91,7 +91,6 @@
         const visitorId = result.visitorId;
         fingerprintInput.value = visitorId;
         fingerprintListo = true;
-        console.log("Fingerprint generado:", visitorId);
       });
     });
 
@@ -122,15 +121,14 @@
           const lon = position.coords.longitude;
           const distancia = calcularDistancia(lat, lon, EMPRESA_LAT, EMPRESA_LON);
 
-          document.getElementById("info_ubicacion").innerText =
-            `Latitud: ${lat.toFixed(6)}\nLongitud: ${lon.toFixed(6)}\nDistancia: ${Math.round(distancia)} metros`;
+          // document.getElementById("info_ubicacion").innerText =
+          //   `Latitud: ${lat.toFixed(6)}\nLongitud: ${lon.toFixed(6)}\nDistancia: ${Math.round(distancia)} metros`;
 
           if (distancia > RADIO_METROS) {
             alert("Debes estar dentro del área de la empresa para registrar asistencia.");
             return;
           }
 
-          alert("Registrando asistencia...");
           form.submit();
         },
         function () {

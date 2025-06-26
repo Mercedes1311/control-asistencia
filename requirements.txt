@@ -1,5 +1,9 @@
 Django==5.1.4
-psycopg2-binary==2.9.10  # Solo si usas PostgreSQL
-sqlparse==0.5.3
-asgiref==3.8.1
-tzdata==2024.2
+gunicorn
+psycopg2-binary
+dj-database-url
+whitenoise
+python-docx
+docxtpl
+openpyxl
+qrcode
