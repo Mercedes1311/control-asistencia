@@ -31,7 +31,7 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = ["*"]
-
+CSRF_TRUSTED_ORIGINS=['https://web-production-95e07.up.railway.app/','htpps://127.0.0.1:8000']
 
 # Application definition
 
@@ -82,18 +82,7 @@ DB_LIVE=os.getenv("DB_LIVE")
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-if DB_LIVE in [False,"False"]:
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
-else:
-
-    DATABASES = {
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv("DB_NAME"),       # Nombre de la base de datos
@@ -102,7 +91,30 @@ else:
             'HOST': os.getenv("DB_HOST"),              # Dirección del servidor
             'PORT': os.getenv("DB_PORT"),                     # Puerto por defecto de PostgreSQL
         }
-    }
+}
+
+
+# if DB_LIVE in [False,"False"]:
+
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#         }
+#     }
+
+# else:
+
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': os.getenv("DB_NAME"),       # Nombre de la base de datos
+#             'USER': os.getenv("DB_USER"),               # Nuevo nombre de usuario
+#             'PASSWORD': os.getenv("DB_PASSWORD"),             # Nueva contraseña
+#             'HOST': os.getenv("DB_HOST"),              # Dirección del servidor
+#             'PORT': os.getenv("DB_PORT"),                     # Puerto por defecto de PostgreSQL
+#         }
+#     }
 
 
 
