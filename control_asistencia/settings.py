@@ -30,7 +30,9 @@ SECRET_KEY = 'django-insecure-=oq-)wjg3f)_e^l5abiqhsov2w=)wmrc%be8gpq$zfk5fck2^t
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['web-production-95e07.up.railway.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+    
+
 
 CSRF_TRUSTED_ORIGINS = [
     'https://web-production-95e07.up.railway.app',
@@ -89,11 +91,11 @@ DB_LIVE=os.getenv("DB_LIVE")
 DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("DB_NAME"),       # Nombre de la base de datos
-            'USER': os.getenv("DB_USER"),               # Nuevo nombre de usuario
-            'PASSWORD': os.getenv("DB_PASSWORD"),             # Nueva contraseña
-            'HOST': os.getenv("DB_HOST"),              # Dirección del servidor
-            'PORT': os.getenv("DB_PORT"),                     # Puerto por defecto de PostgreSQL
+            'NAME': 'bd1hquizfit6bpbb3nsk',       # Nombre de la base de datos
+            'USER': 'u9nsu4tfgkd0qabgsots',               # Nuevo nombre de usuario
+            'PASSWORD': '7TmlVyQhJSTbn5K8Tv9D7pO4E2Hmzu',             # Nueva contraseña
+            'HOST': 'bd1hquizfit6bpbb3nsk-postgresql.services.clever-cloud.com',              # Dirección del servidor
+            'PORT': 5432,                     # Puerto por defecto de PostgreSQL
         }
 }
 
@@ -158,13 +160,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/login/descarga/' 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/login/descarga/' 
+

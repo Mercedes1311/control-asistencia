@@ -30,7 +30,6 @@ Empleado.objects.bulk_create([
     Empleado(nombres='Julio Daniel', apellidos='Pañaherrera Orillo', dni=10000019, contrato='Planilla'),
     Empleado(nombres='Kevin Paul', apellidos='Sanchez', dni=10000020, contrato='Planilla'),
     Empleado(nombres='Marco Antonio Jose', apellidos='Garcia Galvan', dni=10000032, contrato='Planilla'),
-    Empleado(nombres='Mercedes Anayely', apellidos='Durand Azurza', dni=10000021, contrato='RRHH'),
     Empleado(nombres='Pedro Luis', apellidos='Hernandez Reyes', dni=10000022, contrato='Planilla'),
     Empleado(nombres='Romulo', apellidos='Prieto', dni=10000023, contrato='RRHH'),
     Empleado(nombres='Ruben Dario', apellidos='Canicani Ccahuana', dni=10000024, contrato='RRHH'),
