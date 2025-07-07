@@ -1,1 +1,1 @@
-web: python manage.py migrate && gunicorn control_asistencia.wsgi
+web: gunicorn control_asistencia.asgi:application -k uvicorn.workers.UvicornWorker

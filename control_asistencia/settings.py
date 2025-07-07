@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from decouple import config
-
+load_dotenv()  # carga .env manualmente
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,9 +28,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
+
+RENDER_EXTERNAL_HOSTNAME = config('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
     
 
 
@@ -90,15 +95,16 @@ WSGI_APPLICATION = 'control_asistencia.wsgi.application'
 
 
 DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME'),       # Nombre de la base de datos
-            'USER': config('DB_USER'),               # Nuevo nombre de usuario
-            'PASSWORD': config('DB_PASSWORD'),             # Nueva contraseña
-            'HOST': config('DB_HOST'),              # Dirección del servidor
-            'PORT': config('DB_PORT', cast=int),                     # Puerto por defecto de PostgreSQL
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+    }
 }
+
 
 
 print("DB_HOST:", config("DB_HOST"))
@@ -139,11 +145,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+# STATIC_URL = '/static/'
+
+# STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# STATIC_ROOT = BASE_DIR / "staticfiles"
+
 STATIC_URL = '/static/'
 
-STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+
+
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/login/descarga/' 
 
