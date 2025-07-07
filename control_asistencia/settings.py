@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-load_dotenv()
+from decouple import config
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,22 +25,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=oq-)wjg3f)_e^l5abiqhsov2w=)wmrc%be8gpq$zfk5fck2^t'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
     
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-95e07.up.railway.app',
     'https://127.0.0.1:8000',
 ]
 
 # Application definition
+
+print("DB_HOST:", config("DB_HOST"))
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -82,7 +83,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'control_asistencia.wsgi.application'
 
-DB_LIVE=os.getenv("DB_LIVE")
+
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -91,36 +92,16 @@ DB_LIVE=os.getenv("DB_LIVE")
 DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'bd1hquizfit6bpbb3nsk',       # Nombre de la base de datos
-            'USER': 'u9nsu4tfgkd0qabgsots',               # Nuevo nombre de usuario
-            'PASSWORD': '7TmlVyQhJSTbn5K8Tv9D7pO4E2Hmzu',             # Nueva contraseña
-            'HOST': 'bd1hquizfit6bpbb3nsk-postgresql.services.clever-cloud.com',              # Dirección del servidor
-            'PORT': 5432,                     # Puerto por defecto de PostgreSQL
+            'NAME': config('DB_NAME'),       # Nombre de la base de datos
+            'USER': config('DB_USER'),               # Nuevo nombre de usuario
+            'PASSWORD': config('DB_PASSWORD'),             # Nueva contraseña
+            'HOST': config('DB_HOST'),              # Dirección del servidor
+            'PORT': config('DB_PORT', cast=int),                     # Puerto por defecto de PostgreSQL
         }
 }
 
 
-# if DB_LIVE in [False,"False"]:
-
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': BASE_DIR / 'db.sqlite3',
-#         }
-#     }
-
-# else:
-
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': os.getenv("DB_NAME"),       # Nombre de la base de datos
-#             'USER': os.getenv("DB_USER"),               # Nuevo nombre de usuario
-#             'PASSWORD': os.getenv("DB_PASSWORD"),             # Nueva contraseña
-#             'HOST': os.getenv("DB_HOST"),              # Dirección del servidor
-#             'PORT': os.getenv("DB_PORT"),                     # Puerto por defecto de PostgreSQL
-#         }
-#     }
+print("DB_HOST:", config("DB_HOST"))
 
 
 
